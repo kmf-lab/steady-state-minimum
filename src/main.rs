@@ -1,21 +1,21 @@
 use steady_state::*;
-use structopt::*;
-use structopt_derive::*;
+use clap::*;
+
 pub(crate) mod actor {
    pub(crate) mod heartbeat;
 }
 
-#[derive(StructOpt, Debug, PartialEq, Clone)]
+#[derive(Parser, Debug, PartialEq, Clone)]
 pub(crate) struct MainArg {
-    #[structopt(short = "r", long = "rate", default_value = "1000")]
+    #[arg(short = 'r', long = "rate", default_value = "1000")]
     pub(crate) rate_ms: u64,
-    #[structopt(short = "b", long = "beats", default_value = "60")]
+    #[arg(short = 'b', long = "beats", default_value = "60")]
     pub(crate) beats: u64,
 }
 
 fn main() {
-    let cli_args = MainArg::from_args();
-    let _ = init_logging("info");
+    let cli_args = MainArg::parse();
+    let _ = init_logging(LogLevel::Info);
     let mut graph = GraphBuilder::default()
            .build(cli_args); //or pass () if no args
 

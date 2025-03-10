@@ -1,6 +1,6 @@
 use std::error::Error;
 use std::time::Duration;
-use log::info;
+use log::*;
 use steady_state::*;
 
 pub async fn run(context: SteadyContext) -> Result<(),Box<dyn Error>> {

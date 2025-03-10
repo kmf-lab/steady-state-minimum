@@ -1,11 +1,10 @@
 [package]
 name = "minimum"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 
 [dependencies]
-steady_state     = "0.1"
-structopt        = "0.3"
-structopt-derive = "0.4"
-flexi_logger     = "0.29"
-log              = "0.4"
+steady_state     = "0.1.2"
+log              = "0.4.26"
+clap             = { version = "4.5.32", features = ["derive"] }
+
