@@ -1,5 +1,5 @@
 # Define the output file
-$outputFile = "rust_source_summery.md"
+$outputFile = "rust_source_summary.md"
 
 # Function to generate a directory tree
 function Get-DirectoryTree {

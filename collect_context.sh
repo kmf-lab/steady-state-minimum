@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the output file
-output_file="rust_source_summery.md"
+output_file="rust_source_summary.md"
 
 # Check if README.md exists and initialize the file with its content
 if [ -f "README.md" ]; then
