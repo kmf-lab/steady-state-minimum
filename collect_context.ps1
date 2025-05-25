@@ -1,5 +1,5 @@
 # Define the output file
-$outputFile = "rust_source_summary.txt"
+$outputFile = "rust_source_summery.md"
 
 # Function to generate a directory tree
 function Get-DirectoryTree {
@@ -27,9 +27,29 @@ function Get-DirectoryTree {
     }
 }
 
-# Write the directory tree to the output file
-Write-Output "." | Set-Content -Path $outputFile
+# Check if README.md exists and initialize the file with its content
+$readmePath = "README.md"
+if (Test-Path $readmePath) {
+    # Start with README.md content
+    Get-Content $readmePath | Set-Content -Path $outputFile
+    Write-Output "" | Add-Content -Path $outputFile
+    Write-Output "---" | Add-Content -Path $outputFile
+    Write-Output "" | Add-Content -Path $outputFile
+} else {
+    # Initialize empty file if no README
+    "" | Set-Content -Path $outputFile
+}
+
+# Add the Rust Source Summary section
+Write-Output "# Rust Source Summary" | Add-Content -Path $outputFile
+Write-Output "" | Add-Content -Path $outputFile
+Write-Output "## Project Structure" | Add-Content -Path $outputFile
+Write-Output "" | Add-Content -Path $outputFile
+Write-Output '```' | Add-Content -Path $outputFile
+Write-Output "." | Add-Content -Path $outputFile
 Get-DirectoryTree -Path '.' -Prefix '' | Add-Content -Path $outputFile
+Write-Output '```' | Add-Content -Path $outputFile
+Write-Output "" | Add-Content -Path $outputFile
 
 # Find all Cargo.toml files to identify Rust project directories
 $cargoTomls = Get-ChildItem -Recurse -Filter Cargo.toml -File
@@ -41,11 +61,26 @@ foreach ($cargoToml in $cargoTomls) {
     $files = Get-ChildItem -Path $projectDir -Recurse -File -Include *.toml,*.rs | Where-Object {
         $_.FullName -notmatch '\\target\\' -and $_.FullName -notmatch '\\\.[^\\]+\\'
     }
+
     foreach ($file in $files) {
         # Get the relative path for consistency with typical script outputs
         $relativePath = Resolve-Path -Path $file.FullName -Relative
-        Add-Content -Path $outputFile -Value "File: $relativePath"
+
+        # Determine the language for syntax highlighting
+        $language = switch ($file.Extension.ToLower()) {
+            '.rs' { 'rust' }
+            '.toml' { 'toml' }
+            default { 'text' }
+        }
+
+        # Add markdown header for the file
+        Add-Content -Path $outputFile -Value "## $relativePath"
+        Add-Content -Path $outputFile -Value ""
+
+        # Add the file content in a code block with appropriate language
+        Add-Content -Path $outputFile -Value "``````$language"
         Add-Content -Path $outputFile -Value (Get-Content $file.FullName)
+        Add-Content -Path $outputFile -Value '```'
         Add-Content -Path $outputFile -Value ""
     }
 }
