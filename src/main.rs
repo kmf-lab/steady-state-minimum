@@ -1,7 +1,9 @@
 use steady_state::*;
 use clap::*;
 
+// each of the actors is found under this folder
 pub(crate) mod actor {
+    // for clarity every actor is its own module
    pub(crate) mod heartbeat;
 }
 
@@ -13,7 +15,7 @@ pub(crate) struct MainArg {
     pub(crate) beats: u64,
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli_args = MainArg::parse();
     let _ = init_logging(LogLevel::Info);
     let mut graph = GraphBuilder::default()
@@ -25,8 +27,11 @@ fn main() {
          .with_mcpu_avg()
          .build(|context| { actor::heartbeat::run(context) }
                , &mut Threading::Spawn);
+    
     //startup entire graph
     graph.start();
-    // your graph is running here until actor calls graph stop
-    graph.block_until_stopped(std::time::Duration::from_secs(1));
+    
+    // your graph is running here until the actor calls graph stop
+    // returns Ok(()) upon clean shutdown otherwise reports list of actors refusing to shut down
+    graph.block_until_stopped(std::time::Duration::from_secs(1))
 }

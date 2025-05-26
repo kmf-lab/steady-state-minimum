@@ -1,10 +1,11 @@
 [package]
 name = "minimum"
-version = "0.1.2"
+version = "0.1.4"
 edition = "2024"
 
 [dependencies]
-steady_state     = "0.1.2"
+#steady_state     = "0.1.4"
+steady_state     = { path = "../steady-state-stack/core", features = ["exec_async_std", "telemetry_server_builtin"], default-features = false }
 log              = "0.4.26"
 clap             = { version = "4.5.32", features = ["derive"] }
 
