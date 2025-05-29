@@ -80,5 +80,5 @@ fn build_graph(graph: &mut Graph) {
                // Threading::Spawn allocates a dedicated OS thread per actor,
                // ensuring complete isolation and preventing any shared compute issues.
                // This is the safest threading model for beginners to the actor pattern.
-               , &mut Threading::Spawn); // see steady-state-performant for more details
+               , Threading::Spawn); // see steady-state-performant for more details
 }
