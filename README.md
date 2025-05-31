@@ -88,7 +88,7 @@ avg_mCPU{actor_name="heartbeat"} 0
 ## 🚀 Running the App
 
 ```bash
-cargo run -- --rate 500 --beats 10
+cargo run -- --rate 500 --beats 60
 
 ### Expected output
 ```bash
