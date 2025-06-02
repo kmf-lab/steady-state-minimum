@@ -1,60 +1,54 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
 
-# Define the output file
 output_file="rust_source_summary.md"
 
-# Check if README.md exists and initialize the file with its content
-if [ -f "README.md" ]; then
-    # Start with README.md content
-    cat README.md > "$output_file"
-    echo "" >> "$output_file"
-    echo "---" >> "$output_file"
-    echo "" >> "$output_file"
+# Start with README.md if present
+if [ -f README.md ]; then
+  cat README.md > "$output_file"
+  echo >> "$output_file"
+  echo '---' >> "$output_file"
+  echo >> "$output_file"
 else
-    # Initialize empty file if no README
-    > "$output_file"
+  : > "$output_file"
 fi
 
-# Add the Rust Source Summary section
-echo "# Rust Source Summary" >> "$output_file"
-echo "" >> "$output_file"
-echo "## Project Structure" >> "$output_file"
-echo "" >> "$output_file"
-echo '```' >> "$output_file"
+# Project tree
+{
+  echo '# Rust Source Summary'
+  echo
+  echo '## Project Structure'
+  echo
+  echo '```'
+  tree -I 'target|.*'
+  echo '```'
+  echo
+} >> "$output_file"
 
-# Capture the directory tree, excluding 'target' and hidden directories
-tree -I 'target|.*' >> "$output_file"
-
-echo '```' >> "$output_file"
-echo "" >> "$output_file"
-
-# Find all Cargo.toml files to identify Rust project folders
-find . -type f -name Cargo.toml | while read toml; do
-    # Extract the project directory from the Cargo.toml path
-    project_dir=$(dirname "$toml")
-    # Find all *.toml and *.rs files in the project directory, excluding 'target' and hidden directories
-    find "$project_dir" -type d \( -name 'target' -o -name '.*' \) -prune -o -type f \( -name '*.toml' -o -name '*.rs' \) -print | while read file; do
-        # Determine the language for syntax highlighting
-        case "${file##*.}" in
-            rs)
-                language="rust"
-                ;;
-            toml)
-                language="toml"
-                ;;
-            *)
-                language="text"
-                ;;
+# For each Cargo.toml (including the root one)
+while IFS= read -r toml; do
+  project_dir=$(dirname "$toml")
+  # Find *.rs and *.toml under each project_dir, but skip target/ and hidden dirs
+  find "$project_dir" \
+    -type f \
+    \( -name '*.rs' -o -name '*.toml' \) \
+    -not -path '*/target/*' \
+    -not -path '*/.*/*' \
+    | sort \
+    | while IFS= read -r file; do
+        ext="${file##*.}"
+        case "$ext" in
+          rs)   language=rust ;;
+          toml) language=toml ;;
+          *)    language=text ;;
         esac
 
-        # Add markdown header for the file
         echo "## $file" >> "$output_file"
-        echo "" >> "$output_file"
-
-        # Add the file content in a code block with appropriate language
-        echo "\`\`\`$language" >> "$output_file"
+        echo >> "$output_file"
+        echo '```'"$language" >> "$output_file"
         cat "$file" >> "$output_file"
         echo '```' >> "$output_file"
-        echo "" >> "$output_file"
-    done
-done
+        echo >> "$output_file"
+      done
+done < <(find . -type f -name Cargo.toml)
