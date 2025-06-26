@@ -8,31 +8,38 @@ output_file="lesson-00-minimum.md"
 get_directory_tree() {
     local path=$1
     local prefix=$2
-    local items=()
-    while IFS= read -r -d '' item; do
-        items+=("$item")
-    done < <(find "$path" -mindepth 1 -maxdepth 1 ! -name 'target' ! -name '.*' -print0)
-    local count=${#items[@]}
-    for ((i=0; i<count; i++)); do
-        local item=${items[$i]}
-        local base=$(basename "$item")
-        local last=$((i == count - 1))
-        local item_prefix
-        if [ $last -eq 1 ]; then
-            item_prefix='\-- '
-        else
-            item_prefix='+-- '
-        fi
-        echo "$prefix$item_prefix$base"
-        if [ -d "$item" ]; then
-            local new_prefix
-            if [ $last -eq 1 ]; then
+    local stack=("$path")
+    local visited=()
+
+    while [[ ${#stack[@]} -gt 0 ]]; do
+        local current=${stack[-1]}
+        local dirs=()
+        unset "stack[-1]"
+
+        # Use find with -print0 and process with xargs to handle null bytes correctly
+        local files=($(find "$current" -mindepth 1 -maxdepth 1 \
+            -not -name 'target' -not -name '.*' -not -type l -print0 | xargs -0))
+
+        for ((i=0; i<${#files[@]}; i++)); do
+            local file=${files[$i]}
+            local base=$(basename "$file")
+            local is_dir=$(test -d "$file" && echo true || echo false)
+            local is_last=$((${#files[@]} - 1 == $i))
+
+            if [[ $is_last == true ]]; then
+                item_prefix='\-- '
                 new_prefix="$prefix    "
             else
+                item_prefix='+-- '
                 new_prefix="$prefix|   "
             fi
-            get_directory_tree "$item" "$new_prefix"
-        fi
+
+            echo "$prefix$item_prefix$base"
+
+            if [[ $is_dir == true ]]; then
+                stack+=("$file")
+            fi
+        done
     done
 }
 
@@ -63,7 +70,8 @@ fi
 cargo_tomls=$(find . -type f -name Cargo.toml)
 for toml in $cargo_tomls; do
     project_dir=$(dirname "$toml")
-    files=$(find "$project_dir" -type f \( -name '*.rs' -o -name '*.toml' \) ! -path '*/target/*' ! -path '*/.*/*' | sort)
+    files=$(find "$project_dir" -type f \( -name '*.rs' -o -name '*.toml' \) \
+        -not -path '*/target/*' -not -path '*/.*/*' | sort)
     for file in $files; do
         relative_path=$(realpath --relative-to=. "$file")
         ext="${file##*.}"
