@@ -50,7 +50,7 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
         // Perform the actor's primary work - in this case, logging a heartbeat.
         // Actor state modifications happen here safely since each actor has
         // complete isolation from other actors. No locks or synchronization needed.
-        info!("Heartbeat {} {:?}", count, rate );
+        info!("HEARTBEAT {} {:?}", count, rate );
         count -= 1;
 
         // Demonstrate coordinated system shutdown initiated by a single actor.

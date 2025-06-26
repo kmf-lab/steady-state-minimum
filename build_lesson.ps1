@@ -1,5 +1,10 @@
+# This script generates a summary of a Rust project, including the project structure
+# and the contents of all .rs and .toml files, excluding 'target' and hidden directories.
+# The output is written to lesson-00-minimum.md, with a .txt copy created if needed.
+# Run this script from the root of the Rust project using PowerShell.
+
 # Define the output file
-$outputFile = "rust_source_summary.md"
+$outputFile = "lesson-00-minimum.md"
 
 # Function to generate a directory tree
 function Get-DirectoryTree {
@@ -40,8 +45,8 @@ if (Test-Path $readmePath) {
     "" | Set-Content -Path $outputFile
 }
 
-# Add the Rust Source Summary section
-Write-Output "# Rust Source Summary" | Add-Content -Path $outputFile
+# Add the Lesson 00: Minimum section
+Write-Output "# Lesson 00: Minimum" | Add-Content -Path $outputFile
 Write-Output "" | Add-Content -Path $outputFile
 Write-Output "## Project Structure" | Add-Content -Path $outputFile
 Write-Output "" | Add-Content -Path $outputFile
@@ -66,21 +71,33 @@ foreach ($cargoToml in $cargoTomls) {
         # Get the relative path for consistency with typical script outputs
         $relativePath = Resolve-Path -Path $file.FullName -Relative
 
-        # Determine the language for syntax highlighting
-        $language = switch ($file.Extension.ToLower()) {
-            '.rs' { 'rust' }
-            '.toml' { 'toml' }
-            default { 'text' }
+
+        # Read the file content as a single string
+        $fileContent = Get-Content $file.FullName -Raw
+        # Ensure the content ends with a newline
+        if (-not $fileContent.EndsWith("`n")) {
+            $fileContent += "`n"
+        }
+        # Create the code block
+        $codeBlockOpen = switch ($file.Extension.ToLower()) {
+            '.rs' {  '```rust' }
+            '.toml' { '```toml' }
+            default {  '```text' }
         }
 
-        # Add markdown header for the file
+        # Add markdown header and code block to the file
         Add-Content -Path $outputFile -Value "## $relativePath"
         Add-Content -Path $outputFile -Value ""
-
-        # Add the file content in a code block with appropriate language
-        Add-Content -Path $outputFile -Value "``````$language"
-        Add-Content -Path $outputFile -Value (Get-Content $file.FullName)
+        Add-Content -Path $outputFile -Value $codeBlockOpen
+        Add-Content -Path $outputFile -Value "`n"
+        Add-Content -Path $outputFile -Value $fileContent
         Add-Content -Path $outputFile -Value '```'
         Add-Content -Path $outputFile -Value ""
     }
+}
+
+# If the output file does not end with .txt, create a copy with .txt appended
+if (-not $outputFile.EndsWith('.txt')) {
+    $txtFile = "$outputFile.txt"
+    Copy-Item -Path $outputFile -Destination $txtFile
 }
