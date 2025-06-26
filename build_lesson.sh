@@ -67,7 +67,7 @@ fi
 } >> "$output_file"
 
 # Process each Cargo.toml and associated .rs and .toml files
-cargo_tomls=$(find . -type f -name Cargo.toml)
+cargo_tomls=$(find . -type f -name Cargo.toml | sort)
 for toml in $cargo_tomls; do
     project_dir=$(dirname "$toml")
     files=$(find "$project_dir" -type f \( -name '*.rs' -o -name '*.toml' \) \
