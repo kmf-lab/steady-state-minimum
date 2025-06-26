@@ -98,6 +98,6 @@ foreach ($cargoToml in $cargoTomls) {
 
 # If the output file does not end with .txt, create a copy with .txt appended
 if (-not $outputFile.EndsWith('.txt')) {
-    $txtFile = "$outputFile.txt"
+    $txtFile = "..\$outputFile.txt"
     Copy-Item -Path $outputFile -Destination $txtFile
 }
