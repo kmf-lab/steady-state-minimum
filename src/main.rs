@@ -10,7 +10,7 @@ pub(crate) mod actor {
 }
 
 // Static actor name for telemetry, testing and debugging purposes
-const NAME_HEARTBEAT: &str = "heartbeat";
+const NAME_HEARTBEAT: &str = "HEARTBEAT";
 
 /// Command line arguments structure used throughout the actor system.
 /// These arguments are shared across all actors via the steady_state framework,
