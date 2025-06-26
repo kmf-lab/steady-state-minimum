@@ -4,8 +4,7 @@ version = "0.1.4"
 edition = "2024"
 
 [dependencies]
-#steady_state     = "0.1.4"
-steady_state     = { path = "../steady-state-stack/core", features = ["exec_async_std", "telemetry_server_builtin", "prometheus_metrics"], default-features = false }
+steady_state     = "0.2.0"
 log              = "0.4.27"
 clap             = { version = "4.5.38", features = ["derive"] }
 
