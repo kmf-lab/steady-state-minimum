@@ -1,7 +1,3 @@
-Here’s your document with the broken “Feature Flags” section converted to clean Markdown, while leaving the rest unchanged:
-
----
-
 # Minimal Steady State Actor Project
 
 A minimal example of actor-based concurrent programming in Rust using the [`steady_state`](https://crates.io/crates/steady_state) framework.
@@ -37,9 +33,9 @@ This project demonstrates the core features of the actor model within a steady-s
 
 ### Steady State Architecture
 
-- **Continuous Loops**: Actors run in a loop until the system signals shutdown
-- **Coordinated Termination**: Any actor can call `cmd.request_graph_stop()` to end the system
-- **Built-in Monitoring**: Track CPU usage, throughput, and health
+- **Continuous Loops**: Actors run in a loop until the system signals shutdown and await when there is no work.
+- **Coordinated Termination**: Any actor can call `actor.request_shutdown().await` to end the system
+- **Built-in Monitoring**: Track CPU usage, throughput, channel fill and restart counts
 - **Backpressure Handling**: Prevents overload by controlling message flow
 - **Fault Tolerance**: Restarts actors on failure (see steady-state-robust for more details)
 
@@ -61,7 +57,7 @@ These features are active by default and form the core of steady_state’s funct
   Provides metrics in a format compatible with Prometheus, a popular monitoring tool. You can track system stats like CPU usage, message throughput, and channel fill rates, which can then be visualized in tools like Grafana for detailed analysis.
 
 - **core_display**  
-  Offers visibility into which CPU core actors are using at any moment. This helps you understand resource utilization and can assist in debugging or optimizing performance.
+  Offers visibility into which CPU core actors are using at any moment. This helps you understand resource utilization and can assist in debugging or optimizing performance. This value is expected to match the ids your OS task manager assigned to the cores.
 
 - **core_affinity**  
   Enables pinning of actors to specific CPU cores. By controlling which cores handle specific tasks, it reduces context switching and improves cache efficiency, potentially boosting performance.
@@ -71,7 +67,7 @@ These features are active by default and form the core of steady_state’s funct
 These features are not enabled by default but can be added based on your project’s requirements:
 
 - **telemetry_server_cdn**  
-  Delivers telemetry assets (e.g., dashboards and graphs) from a content delivery network (CDN) instead of embedding them in the binary. This shrinks the binary size but requires an internet connection for telemetry features to work.  
+  Delivers telemetry assets (e.g., dashboards and graphs) from a content delivery network (CDN) instead of embedding them in the binary. This shrinks the binary size (about 1MB) but requires an internet connection for telemetry features to work.  
   _Note: Mutually exclusive with telemetry_server_builtin._
 
 - **proactor_nuclei**  
@@ -83,7 +79,7 @@ These features are not enabled by default but can be added based on your project
   _Note: Incompatible with proactor_nuclei and exec_async_std., also not compatible with Windows. (YMMV, under development)
 
 - **restart_actors_when_debugging**  
-  Ensures supervisors automatically restart actors even when running in debug mode (i.e., with debug_assertions enabled). This feature lets you test supervisor logic during development without switching to a release build.
+  Ensures restart of failed actors even when running in debug mode (i.e., with debug_assertions enabled). This feature lets you test supervisor logic during development without switching to a release build.
   - By default, (without this feature set) applications stop on panic when built for dev but restart the actor when built for release.
 
 ## 📋 Project Structure
@@ -96,10 +92,10 @@ These features are not enabled by default but can be added based on your project
 
 ### Notable APIs
 
-- `SteadyContext::cmd().into_monitor()` – Enable monitoring
-- `cmd.is_running()` – Check system status from within an actor
+- `SteadyActor::actor().into_spotlight()` – Enable monitoring
+- `actor.is_running()` – Check system status from within an actor
 - `await_for_all!()` – Perform non-blocking periodic operations
-- `Threading::Spawn` – Allocate one thread per actor for maximum isolation
+- `ScheduleAs::SoloAct` – Allocate one thread per actor for maximum isolation
 
 ### Observing Your First Actor System
 
@@ -108,7 +104,7 @@ These features are not enabled by default but can be added based on your project
   - Values are adjusted to the nearest power of two, so they may be slightly larger than the requested value
   - `refresh`: this is the rate in which we poll for new data, and the frequency the window is updated as new data is rolled in.
   - `window`: the time duration of the window, the units for average can be estimated by the number of refresh periods found in one window.
-- `with_no_refresh_window()` can be used to disable all metrics collection.
+- `with_no_refresh_window()` can be used to disable all avg/std/percentile metrics collection.
 
 #### Telemetry
 
@@ -167,7 +163,7 @@ This minimal example establishes the foundation. Here's what's coming:
 
 1. **steady-state-standard**: Typical steady-state project and what you should expect to find
 2. **steady-state-robust**: Specialized durable solutions to defend against panics
-3. **steady-state-performant**: Specialized high throughput low latency solutions
+3. **steady-state-performant**: Specialized high-throughput low-latency solutions
 4. **steady-state-distributed**: Spanning applications across pods and nodes (machines)
 
 Each lesson builds on these core concepts while adding real-world complexity.
