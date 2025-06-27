@@ -4,7 +4,7 @@ use steady_state::*;
 // Actor modules are organized under actor mod for clarity and maintainability.
 // Each actor represents an independent unit of computation with its own state
 // and message-driven behavior, following the actor model principles.
-pub(crate) mod actor {
+pub(crate) mod actor {  //#!#//
     // The heartbeat actor demonstrates the minimal actor pattern
     pub(crate) mod heartbeat;
 }
@@ -28,7 +28,7 @@ pub(crate) struct MainArg {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let cli_args = MainArg::parse();
+    let cli_args = MainArg::parse();  //#!#//
 
     // If the default port 9900 for Telemetry and Prometheus is already in use, 
     // you can override it like this by setting environment variables.
@@ -40,22 +40,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Initialize structured logging for the entire actor system.
     // Actors use standard log macros (trace!, debut!, info!, warn!, error!) which are
     // automatically coordinated across all threads without contention.
-    init_logging(LogLevel::Info)?;
+    init_logging(LogLevel::Info)?;    //#!#//
 
     // GraphBuilder implements the builder pattern for actor system configuration.
     // The graph represents the entire actor ecosystem - all actors, their
     // relationships, and shared resources like command-line arguments.
-    let mut graph = GraphBuilder::default()
-                    .build(cli_args);
+    let mut graph = GraphBuilder::default().build(cli_args); //#!#//
 
     // Most projects will build the full graph in a separate function for clarity.  
     // This will be helpful later when we add both more actors and testing.
-    build_graph(&mut graph);
+    build_graph(&mut graph); //#!#//
 
     // System startup phase: Initialize all registered actors concurrently.
     // If configured, each actor begins executing in its own thread, starting their event loops.
     // The steady_state framework handles all coordination, panic recovery and lifecycle management.
-    graph.start();
+    graph.start();  //#!#//
 
     // Main thread blocking phase: Wait for the actor system to complete.
     // The system continues running until one actor calls request_shutdown().await,  
@@ -63,13 +62,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     // The timeout parameter (1 second) defines how long to wait for graceful shutdown
     // before forcefully terminating non-responsive actors.
     // Returns Ok(()) on clean shutdown, or an error listing unresponsive actors.
-    graph.block_until_stopped(Duration::from_secs(1))
+    graph.block_until_stopped(Duration::from_secs(1))   //#!#//
 }
 
 fn build_graph(graph: &mut Graph) {
     // Actor registration phase: Define actors and their execution model.
     // Each actor gets its own isolated execution context with no shared memory.
-    graph.actor_builder()
+    graph.actor_builder()  //#!#//
         // Human-readable name for telemetry and debugging purposes. 
         // You could also use .with_name_and_suffix to also include a numeric suffix.
         .with_name(NAME_HEARTBEAT)

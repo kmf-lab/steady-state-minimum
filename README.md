@@ -167,3 +167,5 @@ This minimal example establishes the foundation. Here's what's coming:
 4. **steady-state-distributed**: Spanning applications across pods and nodes (machines)
 
 Each lesson builds on these core concepts while adding real-world complexity.
+
+When reviewing the source code, look for //#!#// which demonstrate key ideas you need to know.

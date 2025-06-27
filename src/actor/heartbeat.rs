@@ -16,7 +16,7 @@ pub async fn run(actor: SteadyActorShadow) -> Result<(),Box<dyn Error>> {
     // real-time metrics like CPU usage, and throughput.
     // if we passed actor as-is, the code continues to work as expected, but without
     // any telemetry or metrics collection overhead.
-    internal_behavior(actor.into_spotlight([], [])).await
+    internal_behavior(actor.into_spotlight([], [])).await  //#!#//
 }
 
 /// Core actor behavior separated from monitoring concerns for testability.
@@ -26,7 +26,7 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
     // Access shared command-line arguments via the type-safe args() method.
     // The steady_state framework automatically provides these arguments to any actor
     // without requiring global variables or parameter threading through function calls.
-    let args = actor.args::<crate::MainArg>().expect("unable to downcast");
+    let args = actor.args::<crate::MainArg>().expect("unable to downcast");//#!#//
     let rate = Duration::from_millis(args.rate_ms);
 
     let mut count = args.beats;
@@ -38,14 +38,14 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
     // The closure allows actors to implement custom shutdown logic, like completing
     // current work before stopping. Returning false from the closure temporarily
     // vetoes shutdown and allows for one more integration of the loop.
-    while actor.is_running(|| true) {
+    while actor.is_running(|| true) {  //#!#//
         // The await_for_all! macro is the standard pattern for actor timing control.
         // It waits for ALL listed futures to complete before proceeding, ensuring
         // precise timing coordination. This prevents the common async pitfall of
         // accidentally racing multiple timing conditions. The macro accepts a
         // comma-separated list of futures and yields control back to the runtime
         // once all are ready, enabling efficient cooperative multitasking.
-        await_for_all!(actor.wait_periodic(rate));
+        await_for_all!(actor.wait_periodic(rate));  //#!#//
 
         // Perform the actor's primary work - in this case, logging a heartbeat.
         // Actor state modifications happen here safely since each actor has
@@ -62,7 +62,7 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
         // if the shutdown barrier count is set on the graph this await will NOT
         // return or trigger the shutdown until the count is reached.
         if  count == 0 {
-            actor.request_shutdown().await;
+            actor.request_shutdown().await;  //#!#//
         }
     }
 
