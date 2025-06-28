@@ -2,6 +2,7 @@ use std::error::Error;
 use std::time::Duration;
 use log::*;
 use steady_state::*;
+use std::cell::RefCell;
 
 /// Actor entry point function following the steady_state actor pattern.
 /// Every actor must have a `run` function that accepts a SteadyActorShadow and returns
@@ -29,7 +30,8 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
     let args = actor.args::<crate::MainArg>().expect("unable to downcast");//#!#//
     let rate = Duration::from_millis(args.rate_ms);
 
-    let mut count = args.beats;
+    // This RefCell is NOT needed but is here to demonstrate Send trait is not required.
+    let count = RefCell::new(args.beats);
 
     // The fundamental actor event loop: continue while the system is running.
     // The is_running() method checks two conditions:
@@ -50,9 +52,9 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
         // Perform the actor's primary work - in this case, logging a heartbeat.
         // Actor state modifications happen here safely since each actor has
         // complete isolation from other actors. No locks or synchronization needed.
-        info!("HEARTBEAT {} {:?}", count, rate );
-        count -= 1;
-
+        info!("HEARTBEAT {:?} {:?}", count, rate );
+        *count.borrow_mut() -= 1; //unnecessary complexity, but we are showing Send trat not required    //#!#//
+        
         // Demonstrate coordinated system shutdown initiated by a single actor.
         // When any actor calls request_shutdown(), the steady_state framework
         // broadcasts a shutdown signal to all actors in the system. This enables
@@ -61,7 +63,7 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
         // properly registered before this actor continues to its next loop iteration.
         // if the shutdown barrier count is set on the graph this await will NOT
         // return or trigger the shutdown until the count is reached.
-        if  count == 0 {
+        if  count.borrow().eq(&0) {
             actor.request_shutdown().await;  //#!#//
         }
     }
