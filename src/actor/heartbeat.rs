@@ -30,7 +30,7 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
     let args = actor.args::<crate::MainArg>().expect("unable to downcast");//#!#//
     let rate = Duration::from_millis(args.rate_ms);
 
-    // This RefCell is NOT needed but is here to demonstrate Send trait is not required.
+    // RefCell is NOT needed but is here to demonstrate Send trait is not required by steady_state.
     let count = RefCell::new(args.beats);
 
     // The fundamental actor event loop: continue while the system is running.
@@ -53,7 +53,7 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
         // Actor state modifications happen here safely since each actor has
         // complete isolation from other actors. No locks or synchronization needed.
         info!("HEARTBEAT {:?} {:?}", count, rate );
-        *count.borrow_mut() -= 1; //unnecessary complexity, but we are showing Send trat not required    //#!#//
+        *count.borrow_mut() -= 1; //unnecessary complexity, but we are showing Send trait NOT required    //#!#//
         
         // Demonstrate coordinated system shutdown initiated by a single actor.
         // When any actor calls request_shutdown(), the steady_state framework
