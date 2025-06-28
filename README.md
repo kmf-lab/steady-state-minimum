@@ -57,7 +57,7 @@ These features are active by default and form the core of steady_state’s funct
   Provides metrics in a format compatible with Prometheus, a popular monitoring tool. You can track system stats like CPU usage, message throughput, and channel fill rates, which can then be visualized in tools like Grafana for detailed analysis.
 
 - **core_display**  
-  Offers visibility into which CPU core actors are using at any moment. This helps you understand resource utilization and can assist in debugging or optimizing performance. This value is expected to match the ids your OS task manager assigned to the cores.
+  Offers visibility into which CPU core actors are used at any moment. This helps you understand resource utilization and can assist in debugging or optimizing performance. This value is expected to match the ids your OS task manager assigned to the cores.
 
 - **core_affinity**  
   Enables pinning of actors to specific CPU cores. By controlling which cores handle specific tasks, it reduces context switching and improves cache efficiency, potentially boosting performance.
