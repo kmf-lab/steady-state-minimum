@@ -76,7 +76,7 @@ fn build_graph(graph: &mut Graph) {
         // This provides real-time performance metrics without significant overhead
         .with_mcpu_avg()
         // Create the actor with its entry point function and threading model
-        .build(|context| { actor::heartbeat::run(context) }
+        .build(|context| actor::heartbeat::run(context)
                // ScheduleAs::SoloAct allocates a dedicated OS thread per actor,
                // ensuring complete isolation and preventing any shared compute issues.
                // This is the safest threading model for beginners to the actor pattern.
