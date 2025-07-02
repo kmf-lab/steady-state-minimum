@@ -47,7 +47,7 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
         // accidentally racing multiple timing conditions. The macro accepts a
         // comma-separated list of futures and yields control back to the runtime
         // once all are ready, enabling efficient cooperative multitasking.
-        await_for_all!(actor.wait_periodic(rate));  //#!#//
+        let _clean = await_for_all!(actor.wait_periodic(rate));  //#!#//
 
         // Perform the actor's primary work - in this case, logging a heartbeat.
         // Actor state modifications happen here safely since each actor has
