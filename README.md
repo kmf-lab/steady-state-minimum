@@ -78,10 +78,6 @@ These features are not enabled by default but can be added based on your project
   Integrates both the tokio runtime and io_uring support for async operations. Not recommended, but if you require tokio this is your path.  
   _Note: Incompatible with proactor_nuclei and exec_async_std., also not compatible with Windows. (YMMV, under development)
 
-- **restart_actors_when_debugging**  
-  Ensures restart of failed actors even when running in debug mode (i.e., with debug_assertions enabled). This feature lets you test supervisor logic during development without switching to a release build.
-  - By default, (without this feature set) applications stop on panic when built for dev but restart the actor when built for release.
-
 ## 📋 Project Structure
 
 - **Heartbeat Actor**  
