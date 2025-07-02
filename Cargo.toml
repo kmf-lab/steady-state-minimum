@@ -4,7 +4,7 @@ version = "0.1.4"
 edition = "2024"
 
 [dependencies]
-steady_state     = "0.2.0"
+steady_state     = "0.2.1"
 log              = "0.4.27"
 clap             = { version = "4.5.38", features = ["derive"] }
 
