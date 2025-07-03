@@ -81,7 +81,6 @@ These features are not enabled by default but can be added based on your project
 - **disable_actor_restart_on_failure**
   Disables the actor restart feature on panic. This is helpful when you need to develop a new system and want to stop on errors to debug them without recycling actors.
   
-
 ## 📋 Project Structure
 
 - **Heartbeat Actor**  
