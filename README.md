@@ -78,6 +78,10 @@ These features are not enabled by default but can be added based on your project
   Integrates both the tokio runtime and io_uring support for async operations. Not recommended, but if you require tokio this is your path.  
   _Note: Incompatible with proactor_nuclei and exec_async_std., also not compatible with Windows. (YMMV, under development)
 
+- **disable_actor_restart_on_failure**
+  Disables the actor restart feature on panic. This is helpful when you need to develop a new system and want to stop on errors to debug them without recycling actors.
+  
+
 ## 📋 Project Structure
 
 - **Heartbeat Actor**  
