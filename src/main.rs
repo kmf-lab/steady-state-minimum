@@ -36,33 +36,33 @@ fn main() -> Result<(), Box<dyn Error>> {
     //      std::env::set_var("TELEMETRY_SERVER_PORT", "5551");
     //      std::env::set_var("TELEMETRY_SERVER_IP", "127.0.0.1");
     // }    
-    
-    // Initialize structured logging for the entire actor system.
-    // Actors use standard log macros (trace!, debut!, info!, warn!, error!) which are
-    // automatically coordinated across all threads without contention.
-    init_logging(LogLevel::Info)?;    //#!#//
 
-    // GraphBuilder implements the builder pattern for actor system configuration.
-    // The graph represents the entire actor ecosystem - all actors, their
-    // relationships, and shared resources like command-line arguments.
-    let mut graph = GraphBuilder::default().build(cli_args); //#!#//
 
-    // Most projects will build the full graph in a separate function for clarity.  
-    // This will be helpful later when we add both more actors and testing.
-    build_graph(&mut graph); //#!#//
+    SteadyRunner::release_build()
+        .with_stack_size(2 * 1024 * 1024)
+        // Initialize structured logging for the entire actor system.
+        // Actors use standard log macros (trace!, debut!, info!, warn!, error!) which are
+        // automatically coordinated across all threads without contention.
+        .with_logging(LogLevel::Info)   //#!#//
+        .run(cli_args, move |mut graph| {
+            // Most projects will build the full graph in a separate function for clarity.
+            // This will be helpful later when we add both more actors and testing.
+            build_graph(&mut graph); //#!#//
 
-    // System startup phase: Initialize all registered actors concurrently.
-    // If configured, each actor begins executing in its own thread, starting their event loops.
-    // The steady_state framework handles all coordination, panic recovery and lifecycle management.
-    graph.start();  //#!#//
+            // System startup phase: Initialize all registered actors concurrently.
+            // If configured, each actor begins executing in its own thread, starting their event loops.
+            // The steady_state framework handles all coordination, panic recovery and lifecycle management.
+            graph.start();  //#!#//
 
-    // Main thread blocking phase: Wait for the actor system to complete.
-    // The system continues running until one actor calls request_shutdown().await,  
-    // which initiates a coordinated shutdown across all actors.
-    // The timeout parameter (1 second) defines how long to wait for graceful shutdown
-    // before forcefully terminating non-responsive actors.
-    // Returns Ok(()) on clean shutdown, or an error listing unresponsive actors.
-    graph.block_until_stopped(Duration::from_secs(1))   //#!#//
+            // Main thread blocking phase: Wait for the actor system to complete.
+            // The system continues running until one actor calls request_shutdown().await,
+            // which initiates a coordinated shutdown across all actors.
+            // The timeout parameter (1 second) defines how long to wait for graceful shutdown
+            // before forcefully terminating non-responsive actors.
+            // Returns Ok(()) on clean shutdown, or an error listing unresponsive actors.
+            graph.block_until_stopped(Duration::from_secs(1))   //#!#//
+        })
+
 }
 
 fn build_graph(graph: &mut Graph) {
