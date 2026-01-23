@@ -40,7 +40,7 @@ async fn internal_behavior<A: SteadyActor>(mut actor: A) -> Result<(),Box<dyn Er
     // The closure allows actors to implement custom shutdown logic, like completing
     // current work before stopping. Returning false from the closure temporarily
     // vetoes shutdown and allows for one more integration of the loop.
-    while actor.is_running(|| true) {  //#!#//
+    while actor.is_running(|| true) {  //#!#// true because I accept the shutdown
         // The await_for_all! macro is the standard pattern for actor timing control.
         // It waits for ALL listed futures to complete before proceeding, ensuring
         // precise timing coordination. This prevents the common async pitfall of
