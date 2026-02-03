@@ -1,10 +1,10 @@
 [package]
 name = "minimum"
-version = "0.2.5"
+version = "0.2.10"
 edition = "2024"
 
 [dependencies]
-steady_state     = "0.2.6"
+steady_state     = "0.2.10"
 log              = "0.4.27"
 clap             = { version = "4.5.38", features = ["derive"] }
 
