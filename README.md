@@ -70,14 +70,6 @@ These features are not enabled by default but can be added based on your project
   Delivers telemetry assets (e.g., dashboards and graphs) from a content delivery network (CDN) instead of embedding them in the binary. This shrinks the binary size (about 1MB) but requires an internet connection for telemetry features to work.  
   _Note: Mutually exclusive with telemetry_server_builtin._
 
-- **proactor_nuclei**  
-  Switches the async runtime to nuclei, which could use io_uring for high-performance I/O operations. This is designed for applications needing low latency and high throughput, offering a cutting-edge alternative to traditional runtimes.  
-  _Note: Cannot be used alongside proactor_tokio or exec_async_std., also not compatible with Windows. (YMMV, under development)
-
-- **proactor_tokio**  
-  Integrates both the tokio runtime and io_uring support for async operations. Not recommended, but if you require tokio this is your path.  
-  _Note: Incompatible with proactor_nuclei and exec_async_std., also not compatible with Windows. (YMMV, under development)
-
 - **disable_actor_restart_on_failure**
   Disables the actor restart feature on panic. This is helpful when you need to develop a new system and want to stop on errors to debug them without recycling actors.
   
@@ -92,8 +84,8 @@ These features are not enabled by default but can be added based on your project
 ### Notable APIs
 
 - `SteadyActor::actor().into_spotlight()` – Enable monitoring
-- `actor.is_running()` – Check system status from within an actor
-- `await_for_all!()` – Perform non-blocking periodic operations
+- `actor.is_running(||)` – At top of actor checks for shutdown. Closure returns true to approve of shutdown.
+- `await_for_all!()` – Perform non-blocking periodic operations also see `await_for_any!()`
 - `ScheduleAs::SoloAct` – Allocate one thread per actor for maximum isolation
 
 ### Observing Your First Actor System
