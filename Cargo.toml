@@ -1,10 +1,11 @@
 [package]
 name = "minimum"
-version = "0.2.10"
+version = "0.2.12"
 edition = "2024"
 
 [dependencies]
-steady_state     = "0.2.10"
-log              = "0.4.27"
-clap             = { version = "4.5.38", features = ["derive"] }
+steady_state = { git = "ssh://git@github.com/kmf-lab/steady-state-stack.git", branch = "main" }
+# steady_state     = "0.2.12"
+log              = "0.4"
+clap             = { version = "4.6", features = ["derive"] }
 
