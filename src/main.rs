@@ -29,6 +29,9 @@ pub(crate) struct MainArg {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let cli_args = MainArg::parse();  //#!#//
+    // Wait long enough for the heartbeat to finish (beats × rate) plus shutdown grace.
+    let shutdown_timeout =
+        Duration::from_millis(cli_args.beats * cli_args.rate_ms) + Duration::from_secs(5);
 
     // If the default port 9900 for Telemetry and Prometheus is already in use, 
     // you can override it like this by setting environment variables.
@@ -57,10 +60,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             // Main thread blocking phase: Wait for the actor system to complete.
             // The system continues running until one actor calls request_shutdown().await,
             // which initiates a coordinated shutdown across all actors.
-            // The timeout parameter (1 second) defines how long to wait for graceful shutdown
-            // before forcefully terminating non-responsive actors.
+            // Max wait for shutdown request + clean shutdown (must cover full heartbeat run).
             // Returns Ok(()) on clean shutdown, or an error listing unresponsive actors.
-            graph.block_until_stopped(Duration::from_secs(1))   //#!#//
+            graph.block_until_stopped(shutdown_timeout)   //#!#//
         })
 
 }
