@@ -1,3 +1,4 @@
+[![Leaderboard](https://my.kmf-lab.com/leaderboard/static/badge/leaderboard/kmf-lab/steady-state-minimum.svg)](https://my.kmf-lab.com/leaderboard/kmf-lab/steady-state-minimum)
 # Minimal Steady State Actor Project
 
 A minimal example of actor-based concurrent programming in Rust using the [`steady_state`](https://crates.io/crates/steady_state) framework.
